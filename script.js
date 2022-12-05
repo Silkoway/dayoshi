@@ -19,8 +19,9 @@ document.addEventListener("click", () => {
     setTimeout(() => {
         y.classList.remove("hit");
         h.classList.remove("hit")
-        y.setAttribute("src", "yoshi.png")
+        
     }, 100)
+    setTimeout(() => y.setAttribute("src", "yoshi.png"), 300)
 })
 
 document.addEventListener("mousemove", (e) => {
