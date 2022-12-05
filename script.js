@@ -9,6 +9,7 @@ document.addEventListener("click", () => {
     let q = r < 0.1;
     if (q) {
         y.setAttribute("src", "yoshiblock.png")
+        h.classList.add("block")
     } else {
         y.setAttribute("src", "sadyoshi.webp")
         count++;
@@ -18,7 +19,7 @@ document.addEventListener("click", () => {
     
     setTimeout(() => {
         y.classList.remove("hit");
-        h.classList.remove("hit")
+        h.classList.remove("hit", "block")
         
     }, 100)
     setTimeout(() => y.setAttribute("src", "yoshi.png"), 300)

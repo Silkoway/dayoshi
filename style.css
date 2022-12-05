@@ -14,7 +14,7 @@ body {
 }
 
 #yoshi.hit {
-    transform: translate(-100%, -50%) scaleX(-50%);
+    transform: translate(-100%, -50%) scaleX(-100%);
 }
 
 #hand {
@@ -23,6 +23,10 @@ body {
     top: 30%;
     transform: translate(-50%, -50%);
     transition: left 100ms, transform 100ms;
+}
+
+#hand.block {
+    transform: translate(-50%, -50%) rotate(360deg);
 }
 
 #hand.hit {
