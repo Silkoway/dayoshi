@@ -14,7 +14,7 @@ body {
 }
 
 #yoshi.hit {
-    transform: translate(-100%, -50%) scaleX(-100%);
+    transform: translate(-100%, -50%) scaleX(100%);
 }
 
 #yoshi.block {
@@ -41,4 +41,23 @@ body {
 #count {
     position: absolute;
     z-index: 5
+}
+
+.bossbar {
+    width: 256px;
+    height: 32px;
+    background-color: #aaa;
+    position: relative;
+}
+.bossbar-filled {
+    height: 32px;
+    background-color: #0f0;
+}
+.bossbar-text {
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
 }
