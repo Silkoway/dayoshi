@@ -1,0 +1,36 @@
+body {
+    overflow: hidden;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif,monospace;
+    user-select: none;
+}
+
+#yoshi {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 100ms;
+    z-index: 0;
+}
+
+#yoshi.hit {
+    transform: translate(-100%, -50%) scaleX(-50%);
+}
+
+#hand {
+    position: absolute;
+    left: 90%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    transition: left 100ms, transform 100ms;
+}
+
+#hand.hit {
+    left: 50%;
+    transform: translate(-50%, -50%) scaleX(190%);
+}
+
+#count {
+    position: absolute;
+    z-index: 5
+}
