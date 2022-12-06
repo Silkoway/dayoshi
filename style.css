@@ -61,3 +61,8 @@ body {
     transform: translate(-50%, -50%);
     width: max-content;
 }
+
+.skins {
+    position: absolute;
+    z-index: 10;
+}
