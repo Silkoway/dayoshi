@@ -14,15 +14,17 @@
 
     let __ = (query) => document.getElementById(query);
 
-    /** @type {["normal" | "hit" | "blocked", string, string][]} */
+    /** @type {["normal" | "hit" | "blocked", string, string, number][]} */
     let skins = [
-        ["normal", "assets/yoshi.png", "Normal Yoshi"],
-        ["hit", "assets/sadyoshi.png", "Sad Yoshi"],
-        ["blocked", "assets/yoshiblock.png", "Blocking Yoshi"],
-        ["normal", "assets/redyoshi.png", "Red Yoshi"]
+        ["normal", "assets/yoshi.png", "Normal Yoshi", -1],
+        ["hit", "assets/sadyoshi.png", "Sad Yoshi", -1],
+        ["blocked", "assets/yoshiblock.png", "Blocking Yoshi", -1],
+        ["normal", "assets/redyoshi.png", "Red Yoshi", 5],
+        ["hit", "assets/cryingyoshi.png", "Crying Yoshi", 15],
+        ["hit", "assets/hit/tearyoshi.png", "Tear Yoshi", 20]
     ]
-    let unlocked = [...skins.slice(0, 3)]
-
+    let unlocked = new Set([...skins.slice(0, 3)])
+    
     let curSkin = {
         normal: skins[0],
         hit: skins[1],
@@ -34,7 +36,7 @@
         let p = JSON.parse(atob(save));
         count = p.count;
         death = p.death;
-        unlocked = p.unlocked;
+        unlocked = new Set(p.unlocked.map(a => skins[a]));
         curSkin = p.curSkin;
     } else {
         setSave()
@@ -45,7 +47,7 @@
         localStorage.setItem("save", btoa(JSON.stringify({
             count: count,
             death: death,
-            unlocked: unlocked,
+            unlocked: Array.from(unlocked.values()).map(a => skins.indexOf(a)),
             curSkin: curSkin
         })))
     }
@@ -62,6 +64,16 @@
         setTimeout(() => {msg.remove()}, 200)
     }
     
+    function resetSave() {
+        setTimeout(() => {
+            localStorage.removeItem('save')
+            location.reload();
+        })
+        
+    }
+
+    window._reset = resetSave
+
     document.addEventListener("click", () => {
         y.classList.add("hit");
         let r = Math.random();
@@ -73,9 +85,17 @@
             h.classList.add("block")
         } else {
             y.setAttribute("src", curSkin.hit[1])
-            count++;
-            health--;
-            createAlert("Normal Hit | +1 Hit")
+            let chance = Math.random() < 0.1
+            if (chance) {
+                count += 5;
+                health -= 5;
+                createAlert("Critical Hit | +5 Hits")
+            }   
+            else {
+                count++;
+                health--;
+                createAlert("Normal Hit | +1 Hit")
+            }
             
             c.innerHTML = "You have hit yoshi " + count + " times<br>You have made yoshi faint " + death + " times"
             h.classList.add("hit");
@@ -83,11 +103,11 @@
         }
         
         setTimeout(() => {
-            y.classList.remove("hit");
             h.classList.remove("hit")
-            y.setAttribute("src", curSkin.normal[1])
         }, 100)
         setTimeout(() => {
+            y.setAttribute("src", curSkin.normal[1])
+            y.classList.remove("hit");
             y.classList.remove("block")
             h.classList.remove("block")
         }, 300)
@@ -110,32 +130,20 @@
         h.style.top = (ypos + Math.sin(sin)*4) + "px"
         bf.style.width = health + '%'
         bt.textContent = `${health} / 100`
-    
+        //console.log(unlocked)
     }, 1)
     y.setAttribute("src", curSkin.normal[1])
-
-    {
-        let buyred = __("buy__red")
-
-        buyred.onclick = () => {
-            if (unlocked.includes(skins[3])) return;
-            if (death >= 5) {
-                death -= 5;
-                unlocked.push(skins[3]);
-                curSkin.normal = skins[3];
-                setSave();
-            }
-            updateSkins();
-        }
-    }
 
     function updateSkins() {
         let idle = __("idle")
         let hit = __("hit")
         let block = __("block")
 
-        idle.innerHTML = ""
-        unlocked.forEach((a, i) => {
+        idle.innerHTML  = ""
+        hit.innerHTML   = ""
+        block.innerHTML = ""
+        var i = 0;
+        unlocked.forEach((a) => {
             if (a[0] === "normal") {
                 idle.innerHTML += `<li class="select${i}"><button>${a[2]}</button></li>`
             }
@@ -145,25 +153,48 @@
             if (a[0] === "hit") {
                 hit.innerHTML += `<li class="select${i}"><button>${a[2]}</button></li>`
             }
+            i++;
         })
-        unlocked.forEach((a, i) => {
+        var i = 0;
+        unlocked.forEach((a) => {
             if (a[0] === "normal") {
-                document.querySelector(`.select${i}`).addEventListener("click", () => {
+                document.querySelector(`.select${i} > button`).addEventListener("click", () => {
                     curSkin.normal = a;
                 })
             }
             if (a[0] === "blocked") {
-                document.querySelector(`.select${i}`).addEventListener("click", () => {
+                document.querySelector(`.select${i} > button`).addEventListener("click", () => {
                     curSkin.blocked = a;
                 })
             }
             if (a[0] === "hit") {
-                document.querySelector(`.select${i}`).addEventListener("click", () => {
+                document.querySelector(`.select${i} > button`).addEventListener("click", () => {
                     curSkin.hit = a;
                 })
             }
+
+            i++;
         })
     }
 
     updateSkins()
+
+    skins.forEach(a => {
+        if (a[3] === -1) return;
+        let buybut = document.createElement("button")
+        buybut.textContent = `Buy ${a[2]} - ${a[3]} faints`
+        
+        __("shop").appendChild(buybut)
+        buybut.addEventListener("click", () => {
+            if (unlocked.has(a)) return;
+            if (death >= a[3]) {
+                death -= a[3]
+                unlocked.add(a);
+                setSave();
+                updateSkins();
+            }
+        })
+        __("shop").appendChild(document.createElement("br"))
+        console.log(unlocked, curSkin)
+    })
 })();

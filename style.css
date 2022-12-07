@@ -66,3 +66,8 @@ body {
     position: absolute;
     z-index: 10;
 }
+
+.skins > h1, .skins > h2 {
+    font-weight: 400;
+    font-size: 1rem;
+}
